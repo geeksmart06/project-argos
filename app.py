@@ -2,5 +2,6 @@ import streamlit.web.cli as stcli
 import sys
 
 if __name__ == "__main__":
-    sys.argv = ["streamlit", "run", "argos/dashboard/main.py"]
+    # Pointing directly to the root dashboard folder seen in your Finder
+    sys.argv = ["streamlit", "run", "dashboard/main.py"]
     sys.exit(stcli.main())
