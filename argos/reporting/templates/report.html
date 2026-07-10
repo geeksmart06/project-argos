@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Project Argos — Fraud Detection Report</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 24px; color: #1a1a1a; }
+    h1 { color: #1a1a1a; margin-bottom: 4px; }
+    .meta { color: #666; margin-bottom: 24px; }
+    .cards { display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+    .card { border: 1px solid #ddd; border-radius: 8px; padding: 12px 16px; min-width: 160px; }
+    .card .value { font-size: 24px; font-weight: bold; }
+    .card .label { color: #666; font-size: 13px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 8px; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 14px; }
+    tr:nth-child(even) { background-color: #fafafa; }
+    .risk-high { color: white; background: #b30000; padding: 2px 8px; border-radius: 4px; font-size: 12px; }
+    .risk-med { color: white; background: #c77700; padding: 2px 8px; border-radius: 4px; font-size: 12px; }
+    .disclaimer { color: #777; font-size: 13px; border-top: 1px solid #eee; margin-top: 24px; padding-top: 16px; }
+  </style>
+</head>
+<body>
+  <h1>Project Argos — Fraud Detection Report</h1>
+  <p class="meta">File: {{ filename }} &middot; Generated: {{ generated }} &middot; Scoring mode: {{ scoring_mode }}</p>
+
+  <div class="cards">
+    <div class="card"><div class="value">{{ total }}</div><div class="label">Transactions analyzed</div></div>
+    <div class="card"><div class="value">{{ flagged_count }}</div><div class="label">Flagged</div></div>
+    <div class="card"><div class="value">{{ high_risk_count }}</div><div class="label">High risk</div></div>
+    <div class="card"><div class="value">{{ score_col }}</div><div class="label">Score column used</div></div>
+  </div>
+
+  <h2>Flagged Transactions (Top {{ top_n }})</h2>
+  <table>
+    <thead>
+      <tr><th>Date</th><th>Description</th><th>Amount</th><th>Score</th><th>Risk</th><th>Reasons</th></tr>
+    </thead>
+    <tbody>
+    {% for t in flagged %}
+      <tr>
+        <td>{{ t.date }}</td>
+        <td>{{ t.description }}</td>
+        <td>{{ "{:,.2f}".format(t.amount) }}</td>
+        <td>{{ "{:.2f}".format(t.suspicion_score) }}</td>
+        <td>
+          {% if t.high_risk == 1 %}<span class="risk-high">HIGH</span>
+          {% else %}<span class="risk-med">MEDIUM</span>{% endif %}
+        </td>
+        <td>{{ t.reasons }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+  <p class="disclaimer">
+    {% if scoring_mode == "supervised" %}
+      Scores are calibrated fraud probabilities from a supervised model trained on labeled data.
+    {% else %}
+      No trained supervised model was available for this run — scores reflect statistical
+      unusualness within this statement only (anomaly detection), not a calibrated fraud
+      probability. Train a supervised model (see scripts/train_supervised.py) for calibrated
+      probabilities.
+    {% endif %}
+    Flagged records should be reviewed by an analyst before any action is taken.
+  </p>
+</body>
+</html>

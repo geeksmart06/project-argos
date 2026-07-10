@@ -1,0 +1,27 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+build/
+dist/
+
+# Environments
+.venv/
+venv/
+.env
+
+# Data & model artifacts (don't commit real bank data or large models)
+data/*.csv
+data/*.xlsx
+!data/.gitkeep
+models/*.pkl
+models/*.json
+!models/.gitkeep
+
+# Reports (generated output)
+reports/
+
+# OS/editor
+.DS_Store
+.vscode/
+.idea/

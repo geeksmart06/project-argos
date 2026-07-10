@@ -1,0 +1,39 @@
+# Project Argos configuration
+# All thresholds and paths are centralized here so the pipeline behavior
+# can be tuned without touching code.
+
+thresholds:
+  flag_score: 0.5        # score above this => transaction is flagged
+  high_risk_score: 0.8    # score above this => triggers an alert
+
+unsupervised:
+  contamination: 0.02     # expected fraction of anomalies (IsolationForest/LOF)
+  n_neighbors: 20         # LOF neighborhood size
+
+supervised:
+  model_path: models/supervised_model.pkl
+  use_if_available: true  # fall back to unsupervised-only if no trained model exists
+
+ensemble:
+  # Weights only apply when a supervised model IS available.
+  # When it's not, the pipeline runs unsupervised-only and labels
+  # output as "anomaly_score", not "fraud_probability".
+  supervised_weight: 0.6
+  unsupervised_weight: 0.25
+  rules_weight: 0.15
+
+alerts:
+  enabled: true
+  channel: console        # console | email | webhook
+  webhook_url: null
+  email:
+    smtp_host: null
+    smtp_port: 587
+    username: null
+    password: null
+    sender: null
+    recipient: null
+
+reporting:
+  output_dir: reports
+  top_n_flagged: 25
